@@ -1,0 +1,221 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: 'http://localhost:7050/store'
+    description: Generated server url
+paths:
+  /customer:
+    get:
+      tags:
+        - customer-controller
+      operationId: getCustomers
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiResponseListCustomerDto'
+  '/order/{id}':
+    get:
+      tags:
+        - order-controller
+      operationId: getOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiResponseOrderDto'
+  '/product/available/{customerId}':
+    get:
+      tags:
+        - product-controller
+      operationId: getProductsByCustomer
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiResponseListProductDto'
+  /order/save:
+    post:
+      tags:
+        - order-controller
+      operationId: saveOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiResponseInteger'
+  /order:
+    post:
+      tags:
+        - order-controller
+      operationId: getOrdersPerCustomerByDateRange
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestOrdersDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiResponseListOrderDto'
+components:
+  schemas:
+    ApiResponseListCustomerDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerDto'
+        notification:
+          $ref: '#/components/schemas/Notification'
+    CustomerDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        email:
+          type: string
+    Notification:
+      type: object
+      properties:
+        description:
+          type: string
+        code:
+          type: string
+        responseTime:
+          type: string
+    ApiResponseOrderDto:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrderDto'
+        notification:
+          $ref: '#/components/schemas/Notification'
+    OrderDetailDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        productDescription:
+          type: string
+        price:
+          type: number
+          format: double
+        quantity:
+          type: integer
+          format: int32
+        orderId:
+          type: integer
+          format: int32
+        product:
+          $ref: '#/components/schemas/ProductDto'
+    OrderDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        customer:
+          $ref: '#/components/schemas/CustomerDto'
+        creation_date:
+          type: string
+          format: date
+        delivery_address:
+          type: string
+        total:
+          type: number
+          format: double
+        order_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderDetailDto'
+    ProductDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        product_description:
+          type: string
+        price:
+          type: number
+          format: double
+    ApiResponseListProductDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDto'
+        notification:
+          $ref: '#/components/schemas/Notification'
+    ApiResponseInteger:
+      type: object
+      properties:
+        data:
+          type: integer
+          format: int32
+        notification:
+          $ref: '#/components/schemas/Notification'
+    RequestOrdersDto:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+          format: int32
+        initial_date:
+          type: string
+          format: date
+        final_date:
+          type: string
+          format: date
+    ApiResponseListOrderDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderDto'
+        notification:
+          $ref: '#/components/schemas/Notification'
